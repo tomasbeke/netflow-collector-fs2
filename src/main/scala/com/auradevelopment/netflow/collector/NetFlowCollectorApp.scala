@@ -65,10 +65,10 @@ object NetFlowCollectorApp extends IOApp.Simple {
 
   val port: Option[Port] = Port.fromString(bindPort)
 
-  def producerSettings[F[_] : Sync] = ProducerSettings[F, Unit, String]
-    .withBootstrapServers(bootstrapServers)
+  def producerSettings[F[_] : Sync]: ProducerSettings[F, Unit, String] =
+    ProducerSettings[F, Unit, String].withBootstrapServers(bootstrapServers)
 
-  def udpServer[F[_] : Network : Async] =
+  def udpServer[F[_] : Network : Async]: F[Unit] =
     Stream.resource(Network[F].openDatagramSocket(port = port)).flatMap { (socket: DatagramSocket[F]) =>
       socket.reads
         .through(datagramToByteBuffer)
